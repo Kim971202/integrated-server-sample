@@ -146,14 +146,6 @@ project('app-push-server') {
 }
 //단지GW
 project('app-dggw-server') {
-
-	jar {
-		// spring.factories 파일을 JAR에 포함시킴
-		from("src/main/resources/META-INF/spring.factories") {
-			into("META-INF")
-		}
-	}
-
 	dependencies {
 		implementation project(':domain-dggw')
 		implementation project(':domain-integrated')
@@ -166,13 +158,13 @@ project('app-dggw-server') {
 		implementation 'commons-net:commons-net:3.8.0'
 		implementation 'commons-io:commons-io:2.9.0'
 
-		implementation 'mysql:mysql-connector-java'
-		implementation 'org.mariadb.jdbc:mariadb-java-client'
+		//implementation 'mysql:mysql-connector-java'
+		//implementation 'org.mariadb.jdbc:mariadb-java-client'
 		implementation 'org.springframework:spring-webflux:5.3.21'
 		implementation 'io.projectreactor.netty:reactor-netty:1.0.20'
-		implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+		//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		//implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework:spring-websocket:5.3.21'
 	}
