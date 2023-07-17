@@ -3,6 +3,7 @@ package com.daesung.domain.dggw.constant;
 import com.daesung.domain.dggw.web.data.EnergyUseTarget;
 import com.daesung.domain.dggw.web.data.NoticeDetail;
 import com.daesung.domain.dggw.web.data.NoticeList;
+import com.daesung.domain.dggw.web.data.UserList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public enum DgWebFunctionId {
     getNoticeList("getNoticeList","공지사항목록조회","GET","/notice","getNoticeList", NoticeList.class)
     ,getNoticeDetail("getNoticeDetail","공지사항상세보기","GET","/notice","getNoticeDetail", NoticeDetail.class)
     ,postEnergyUseTargetSet("postEnergyUseTargetSet","에너지목표사용량설정","POST","/ems","postEnergyUseTargetSet", EnergyUseTarget.class)
+    ,getUserList("getUserList", "사용자목록조회", "GET", "/user", "getUserList", UserList.class)
     ;
 
     private String id;

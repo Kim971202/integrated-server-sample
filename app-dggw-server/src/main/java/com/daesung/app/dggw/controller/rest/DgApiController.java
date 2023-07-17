@@ -37,7 +37,7 @@ public class DgApiController {
     @Value("5")
     private long TIME_OUT;
 
-    @Value("http://1.226.248.99:3000")
+    @Value("http://localhost:3000")
     private String apiServerUrl;
 
     private final CommonService apiService;
