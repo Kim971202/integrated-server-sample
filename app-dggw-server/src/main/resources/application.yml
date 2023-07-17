@@ -1,2 +1,7 @@
 server:
   port: 7773
+spring:
+  redis:
+    host: 1.226.248.99
+    port: 6379
+    password: 5$gA7%M1Y8*CnYU

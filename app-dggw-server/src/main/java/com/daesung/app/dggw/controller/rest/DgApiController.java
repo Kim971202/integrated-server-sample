@@ -1,8 +1,10 @@
 package com.daesung.app.dggw.controller.rest;
 
 import com.daesung.app.dggw.controller.service.CommonService;
+import com.daesung.app.dggw.service.DgWebApiService;
 import com.daesung.app.dggw.web.WebClientUtils;
 import com.daesung.cmn.server.util.JSON;
+import com.daesung.cmn.server.util.ServerUtils;
 import com.daesung.domain.dggw.constant.DgWebFunctionId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,8 @@ public class DgApiController {
     private String apiServerUrl;
 
     private final CommonService apiService;
+    private final ServerUtils serverUtils;
+    private final DgWebApiService dgWebApiService;
 
     @RequestMapping(path = "/api/dg/{uri1}")
     public DeferredResult<ResponseEntity<?>> execute(@RequestBody String data, @PathVariable String uri1, HttpServletRequest request){
@@ -53,12 +57,13 @@ public class DgApiController {
         }
 
         //요청값 세팅
-        String homeId = "0001";
-        String dong = "101";
-        String ho = "101";
+        String homeId = "0000.0101.0101";
+        String dong = String.valueOf(Integer.parseInt(serverUtils.getDgDong(homeId)));
+        String ho = String.valueOf(Integer.parseInt(serverUtils.getDgHo(homeId)));
+        log.info("homeId:{} dong:{} ho:{}", homeId, dong, ho);
 
-        //Servicekey TODO: Redis DB에서 획득하여야 함
-        String serviceKey = "84b9dffe-a16c-4179-a4b9-8db426146630";
+        String serviceKey = dgWebApiService.getServiceKey(dong, ho);
+        log.info("ServiceKey: " + serviceKey);
 
         Object requestValue = apiService.setCommonValue(JSON.fromJson(data, DgWebFunctionId.valueOf(functionId).getRequestClass()), serviceKey, dong, ho);
         log.info("requestValue:{}", JSON.toJson(requestValue, true));
@@ -74,7 +79,9 @@ public class DgApiController {
 
         if(HttpMethod.GET == method){
             spec = WebClientUtils.getQueryClient(apiServerUrl, method);
+            //최종 호출 Url
             uri += "?" + WebClientUtils.getRequestString(requestValue.getClass(), requestValue);
+            log.info("url:{}", apiServerUrl + uri);
 
             apiRequest = spec
                     .uri(uri)

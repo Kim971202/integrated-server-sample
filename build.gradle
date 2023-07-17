@@ -164,7 +164,7 @@ project('app-dggw-server') {
 		implementation 'io.projectreactor.netty:reactor-netty:1.0.20'
 		//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 		//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		//implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework:spring-websocket:5.3.21'
 	}
