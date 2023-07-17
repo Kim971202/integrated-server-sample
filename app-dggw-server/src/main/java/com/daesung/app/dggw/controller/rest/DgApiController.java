@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import org.springframework.web.reactive.function.client.WebClient.UriSpec;
 import reactor.core.publisher.Mono;
@@ -85,6 +86,13 @@ public class DgApiController {
 
             apiRequest = spec
                     .uri(uri)
+                    .retrieve()
+                    .toEntity(String.class);
+        } else {
+            spec = WebClientUtils.getSslClient(apiServerUrl, MediaType.APPLICATION_FORM_URLENCODED_VALUE, method);
+            apiRequest = spec
+                    .uri(uri)
+                    .body(BodyInserters.fromFormData(WebClientUtils.getRequestFormData(requestValue.getClass(), requestValue)))
                     .retrieve()
                     .toEntity(String.class);
         }
