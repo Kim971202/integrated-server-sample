@@ -34,7 +34,7 @@ public class TokenConfig {
     private String pathPublicKey = "apikeys/public-key";
 
     // 토큰 JWE 암호화에 사용되는 대칭키
-    private String pathEncryptKey = "apikeys/encrypth-key";
+    private String pathEncryptKey = "apikeys/encrypt-key";
 
     // XXX 서버간 토큰 유효기간(단위: 분)
     private long expirationTime = 525600; // 1년

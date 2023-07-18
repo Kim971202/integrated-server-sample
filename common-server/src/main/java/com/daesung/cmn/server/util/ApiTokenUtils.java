@@ -7,7 +7,10 @@ import com.daesung.cmn.server.constant.TokenPayload;
 import com.daesung.cmn.server.token.properties.TokenConfig;
 import com.daesung.domain.inte.token.TokenMaterial;
 import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -197,6 +202,47 @@ public class ApiTokenUtils {
         //플랫폼을 제외한 나머지 서버대상.
         if( !Publics.APP_PLATFORM_SERVER.equals(serverId)
                 && !serverId.equals(token.getHeader().getDid()) ) {log.info("플랫폼을 제외한 나머지 서버대상.");}
+    }
+
+    public String createJWT(TokenMaterial material) {
+        log.info("createJWT(TokenMaterial material) called");
+
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .customParam(TokenHeaderCustomParam.SID.getKey(), material.getHeader().getSid()) //출발지서버ID
+                .customParam(TokenHeaderCustomParam.DID.getKey(), material.getHeader().getDid()) //목적지서버ID
+                .customParam(TokenHeaderCustomParam.TID.getKey(), material.getHeader().getTid()) //트랜잭션ID
+                .contentType(material.getHeader().getContentType())
+                .build();
+
+        LocalDateTime timeStamp = serverUtils.getTimeAsiaSeoulNow();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .issueTime(new Date())
+                .expirationTime(Date.from(timeStamp.plusMinutes(tokenConfig.getExpirationTime()).atZone(ZoneId.systemDefault()).toInstant()))
+                .claim(TokenPayload.HID.getKey(), material.getPayload().getHid()) //홈아이디
+                .claim(TokenPayload.IOT.getKey(), material.getPayload().getIot()) //월패드인증ID
+                .claim(TokenPayload.FID.getKey(), material.getPayload().getFid()) //function ID
+                .build();
+
+        return createJWT(header, claimsSet);
+    }
+
+    private String createJWT(JWSHeader header, JWTClaimsSet claimsSet) {
+        log.info("createJWT(JWSHeader header, JWTClaimsSet claimsSet) called");
+
+        System.out.println(header);
+        System.out.println(claimsSet);
+
+        try {
+            SignedJWT signedJWT = new SignedJWT(header,claimsSet);
+            signedJWT.sign(tokenConfig.getRsassaSigner());
+
+            return signedJWT.serialize();
+
+        } catch(Exception e) {
+            log.error("", e);
+        }
+
+        return null;
     }
 
 }
