@@ -42,9 +42,14 @@ public class CreateTokenController {
         log.info("create platform token:" + JSON.toJson(tokenMaterial, true));
         //플랫폼 JWT 토큰 생성
         String token = apiTokenUtils.createJWT(tokenMaterial);
+        System.out.println(token);
+        // JWT -> JWE
+        String myToken = apiTokenUtils.createJWE(token);
 
-        //token = apiTokenUtils.decryptJWE(token);
-        return token;
+        String decryptedToken = apiTokenUtils.decryptJWE(myToken);
+        System.out.println(decryptedToken);
+
+        return myToken;
     }
 
 }

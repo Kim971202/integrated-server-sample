@@ -6,10 +6,7 @@ import com.daesung.cmn.server.constant.TokenHeaderCustomParam;
 import com.daesung.cmn.server.constant.TokenPayload;
 import com.daesung.cmn.server.token.properties.TokenConfig;
 import com.daesung.domain.inte.token.TokenMaterial;
-import com.nimbusds.jose.JWEObject;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
@@ -238,6 +235,37 @@ public class ApiTokenUtils {
 
             return signedJWT.serialize();
 
+        } catch(Exception e) {
+            log.error("", e);
+        }
+
+        return null;
+    }
+
+    public String createJWE(String jwtToken) {
+        log.info("createJWE(String jwtToken) called");
+
+        return createJWE(jwtToken, tokenConfig.getPathEncryptKey());
+    }
+
+    private String createJWE(String jwtToken, String encKeyPath) {
+        log.info("createJWE(String jwtToken, String encKeyPath) called");
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+
+            JWEObject jweObject = new JWEObject(
+                    new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM)
+                            .customParam(TokenHeaderCustomParam.SID.getKey(), signedJWT.getHeader().getCustomParam(TokenHeaderCustomParam.SID.getKey()))
+                            .customParam(TokenHeaderCustomParam.DID.getKey(), signedJWT.getHeader().getCustomParam(TokenHeaderCustomParam.DID.getKey()))
+                            .customParam(TokenHeaderCustomParam.TID.getKey(), signedJWT.getHeader().getCustomParam(TokenHeaderCustomParam.TID.getKey()))
+                            .contentType(TokenContentType.JWE.name())
+                            .build(),
+                    new Payload(jwtToken));
+
+            jweObject.encrypt(tokenConfig.getJweEncrypter());
+
+            return jweObject.serialize();
         } catch(Exception e) {
             log.error("", e);
         }
