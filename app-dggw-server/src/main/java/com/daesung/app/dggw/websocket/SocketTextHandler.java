@@ -10,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Slf4j
@@ -58,7 +56,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
             log.info("responseValue: " + JSON.fromJson(message.getPayload(), ResponseValue.class));
 
             session.sendMessage(new TextMessage(JSON.toJson(handleTextMessage)));
-
+            session.sendMessage(new PingMessage());
             eventPublisher.publishEvent(SampleEvent.builder()
                     .source(this)
                     .session(session)
@@ -72,12 +70,21 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        super.afterConnectionEstablished(session);
-    }
+        log.info("afterConnectionEstablished");
+        System.out.println("session: " + session);
 
+    }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
     }
+
+    @Override
+    protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
+        log.info("handlePongMessage called");
+    }
+
+
+
 }
