@@ -3,6 +3,7 @@ package com.daesung.app.dggw.websocket;
 import com.daesung.app.dggw.websocket.event.SampleEvent;
 import com.daesung.cmn.server.util.JSON;
 import com.daesung.cmn.server.util.ServerUtils;
+import com.daesung.domain.dggw.constant.DgWebFunctionId;
 import com.daesung.domain.dggw.websocket.HandleTextMessage;
 import com.daesung.domain.dggw.websocket.RequestValue;
 import com.daesung.domain.dggw.websocket.ResponseValue;
@@ -52,11 +53,16 @@ public class SocketTextHandler extends TextWebSocketHandler {
             requestValue = JSON.fromJson(message.getPayload(), RequestValue.class);
             responseValue = JSON.fromJson(message.getPayload(), ResponseValue.class);
 
+            // TODO: Test용 requestValue
+            if(DgWebFunctionId.getNoticeList.getId().equals(functionId)){
+
+            }
+
             log.info("requestValue: " + JSON.fromJson(message.getPayload(), RequestValue.class));
             log.info("responseValue: " + JSON.fromJson(message.getPayload(), ResponseValue.class));
 
             session.sendMessage(new TextMessage(JSON.toJson(handleTextMessage)));
-            session.sendMessage(new PingMessage());
+//            session.sendMessage(new PingMessage());
             eventPublisher.publishEvent(SampleEvent.builder()
                     .source(this)
                     .session(session)
